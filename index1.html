@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Speech Converter</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #e9ecef;
+            padding-top: 50px;
+        }
+        .container {
+            background-color: #ffffff;
+            max-width: 800px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        }
+        textarea {
+            resize: vertical;
+        }
+        .audio-player {
+            margin-top: 20px;
+        }
+        .download-btn {
+            margin-top: 10px;
+        }
+        h2 {
+            color: #007bff;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center">Text-to-Speech Converter</h2>
+        <form method="POST">
+            <div class="form-group">
+                <label for="text">Enter Text:</label>
+                <textarea class="form-control" id="text" name="text" rows="5" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="voice">Select Voice (for English):</label>
+                <select class="form-control" id="voice" name="voice">
+                    <option value="">None (for multi-language)</option>
+                    <optgroup label="Male Voices">
+                        {% for voice in voices.male %}
+                            <option value="{{ voice.id }}">{{ voice.name }} ({{ voice.gender }})</option>
+                        {% endfor %}
+                    </optgroup>
+                    <optgroup label="Female Voices">
+                        {% for voice in voices.female %}
+                            <option value="{{ voice.id }}">{{ voice.name }} ({{ voice.gender }})</option>
+                        {% endfor %}
+                    </optgroup>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="language">Select Language:</label>
+                <select class="form-control" id="language" name="language" required>
+                    {% for lang_code, lang_name in languages.items() %}
+                        <option value="{{ lang_code }}">{{ lang_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="speed">Select Speed:</label>
+                <select class="form-control" id="speed" name="speed" required>
+                    <option value="normal">Normal</option>
+                    <option value="slow">Slow</option>
+                    <option value="fast">Fast</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Convert Text to Speech</button>
+        </form>
+        {% if audio_file %}
+        <div class="audio-player text-center">
+            <h4>Generated Speech:</h4>
+            <audio controls>
+                <source src="{{ url_for('serve_audio', filename=audio_file) }}" type="audio/mp3">
+                Your browser does not support the audio element.
+            </audio>
+            <div class="download-btn">
+                <a href="{{ url_for('download_file', filename=audio_file) }}" class="btn btn-success">Download Audio</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
